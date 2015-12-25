@@ -18,6 +18,7 @@ defmodule Fsm do
       end
 
       def state(%__MODULE__{state: state}), do: state
+      def id(%__MODULE__{id: id}), do: id
       def data(%__MODULE__{data: data}), do: data
 
       defp change_state(%__MODULE__{} = fsm, {:action_responses, responses}), do: parse_action_responses(fsm, responses)
