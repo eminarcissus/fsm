@@ -1,15 +1,20 @@
 defmodule Fsm do
   defmacro __using__(opts) do
-    quote do
+    quote location: :keep do
       import Fsm
 
-      defstruct [:state, :data]
+      defstruct [:state, :data, :id]
 
       @declaring_state nil
       @declared_events HashSet.new
 
-      def new do
-        %__MODULE__{state: unquote(opts[:initial_state]), data: unquote(opts[:initial_data])}
+      def new() do
+        id = UUID.uuid1()
+        new(id)
+      end
+
+      def new(id) do
+        %__MODULE__{state: unquote(opts[:initial_state]), data: unquote(opts[:initial_data]),id: id}
       end
 
       def state(%__MODULE__{state: state}), do: state
@@ -118,6 +123,7 @@ defmodule Fsm do
 
       private = unquote(opts[:private])
       state_arg = unquote(Macro.escape(opts[:state] || quote(do: _), unquote: true))
+      id_arg = unquote(Macro.escape(opts[:id] || quote(do: _), unquote: true))
       data_arg = unquote(Macro.escape(opts[:data] || quote(do: _), unquote: true))
       event_arg = unquote(Macro.escape(opts[:event] || quote(do: _), unquote: true))
       args_arg = unquote(Macro.escape(opts[:args] || quote(do: _), unquote: true))
@@ -160,11 +166,11 @@ defmodule Fsm do
       transition_args = [
         if @declaring_state do
           quote do
-            %__MODULE__{state: unquote(@declaring_state) = unquote(state_arg), data: unquote(data_arg)} = fsm
+            %__MODULE__{state: unquote(@declaring_state) = unquote(state_arg), data: unquote(data_arg),id: unquote(id_arg)} = fsm
           end
         else
           quote do
-            %__MODULE__{state: unquote(state_arg), data: unquote(data_arg)} = fsm
+            %__MODULE__{state: unquote(state_arg), data: unquote(data_arg),id: unquote(id_arg)} = fsm
           end
         end,
 

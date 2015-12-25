@@ -21,6 +21,6 @@ defmodule Fsm.Mixfile do
   end
 
   defp deps do
-    []
+    [{:uuid,github: "zyro/elixir-uuid"}]
   end
 end
